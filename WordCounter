@@ -1,0 +1,28 @@
+class WordCounter:
+    def __init__(self):
+        self.sentence = ""
+
+    def get_sentence(self):
+        """Get a sentence from the user."""
+        self.sentence = input("Enter a sentence: ").strip()
+
+    def count_words(self):
+        """Count the number of words in the sentence."""
+        if not self.sentence:
+            return 0
+        # Split sentence by spaces and filter out empty strings
+        words = [word for word in self.sentence.split() if word]
+        return len(words)
+
+    def display_result(self):
+        """Display the number of words."""
+        count = self.count_words()
+        print(f"Number of words: {count}")
+
+
+if __name__ == "__main__":
+    counter = WordCounter()
+    counter.get_sentence()
+    counter.display_result()
+
+
