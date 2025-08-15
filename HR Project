@@ -1,0 +1,38 @@
+class Employee:
+    def __init__(self, name, salary, job_title):
+        """Initialize employee attributes."""
+        self.name = name
+        self.salary = salary
+        self.job_title = job_title
+
+    def display_info(self):
+        """Display employee's details."""
+        print(f"Name: {self.name}")
+        print(f"Salary: ${self.salary:,.2f}")
+        print(f"Job Title: {self.job_title}")
+        print("-" * 30)
+
+    def give_raise(self, amount):
+        """Increase the employee's salary by a given amount."""
+        self.salary += amount
+        print(f"{self.name} got a raise of ${amount:,.2f}!")
+        print(f"Updated Salary: ${self.salary:,.2f}")
+        print("-" * 30)
+
+
+if __name__ == "__main__":
+    employee1 = Employee("Alice Johnson", 55000, "Software Developer")
+    employee2 = Employee("Bob Smith", 62000, "Data Analyst")
+
+    # Display info for each employee
+    print("Initial Employee Details:")
+    employee1.display_info()
+    employee2.display_info()
+
+    # Give a raise to one employee and display updated salary
+    print("After Giving Raise:")
+    employee1.give_raise(5000)
+    employee1.display_info()
+
+ 
+ 
