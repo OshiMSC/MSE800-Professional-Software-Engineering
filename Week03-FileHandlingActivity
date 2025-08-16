@@ -1,0 +1,47 @@
+class FileHandler:
+    def __init__(self, source_file, destination_file):
+        self.source_file = source_file
+        self.destination_file = destination_file
+        self.content = ""
+        
+
+    def read_file(self):
+        """Read the entire content of the source file with UTF-8 encoding."""
+        try:
+            with open(self.source_file, "r", encoding="utf-8", errors="replace") as file:
+                self.content = file.read()
+                #Calculate the word count
+                words= self.content.split()
+                word_counts = len(words)
+                print(f"Contents of {self.source_file}:")
+                print(self.content)
+                return word_counts
+        except FileNotFoundError:
+            print(f"Error: '{self.source_file}' not found.")
+
+        
+
+    def write_file(self):
+        """Write the content to the destination file."""
+        try:
+            with open(self.destination_file, "w", encoding="utf-8") as file:
+                file.write(self.content)
+                print(f"\nContent successfully copied to {self.destination_file}")
+        except Exception as e:
+            print(f"Error writing to {self.destination_file}: {e}")
+
+
+if __name__ == "__main__":
+    # Create an object for FileHandler
+    handler = FileHandler("demo.txt", "demo_copy.txt")
+
+    # Call methods
+    handler.read_file()
+    handler.write_file()
+    #To get the Word Count
+    total_words = handler.read_file()
+    filePath = "demo.txt"
+    if total_words > 0:
+        print(f"Total number of words in '{filePath}': {total_words}")
+
+
