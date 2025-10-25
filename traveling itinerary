@@ -1,0 +1,85 @@
+import requests
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
+GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
+MODEL_NAME = "gemini-2.5-flash"
+
+def instructor_chatbot():
+    # --- API Key Setup ---
+    # We now look for the GEMINI_API_KEY
+    api_key = os.getenv("GEMINI_API_KEY")
+    
+    if not api_key:
+        print("Error: GEMINI_API_KEY is missing or invalid.")
+        print("Please ensure you have a valid key from Google AI Studio and that it is correctly set in your .env file.")
+        return
+
+    """Command-line AI Itinerary Chatbot."""
+    print("Welcome to AI Itinerary recommender! Answer a few questions to get personalized itinerary advice.\n")
+    
+    days = input("How many (days): ")
+    location = input("Where is the destination (city name): ")
+    age = input("Enter your age: ")
+
+    prompt_text = f"""
+    You are a professional tourist recommender. Provide a realistic itinerary recommendation based on user data.
+    
+    User Details:
+    - Days: {days} days
+    - Destination: {location} city
+    - Age: {age} years
+    
+    Based on this information, provide a structured itinerary. For each day, list a maximum of three activities. Each activity must include:
+    1. The name of the place.
+    2. A brief, realistic description.
+    3. The address or a clear location reference (e.g., "Near the central park entrance").
+    """
+    payload = {
+        "contents": [{"parts": [{"text": prompt_text}]}],
+        "systemInstruction": {"parts": [{"text": "You are an expert travel agent who prioritizes safe, realistic, and well-researched travel plans. Use Google Search grounding to ensure accurate location details."}]},
+        "tools": [{"google_search": {}}], # Enable Google Search for up-to-date and grounded information
+        "generationConfig": { # RENAMED from "config" to "generationConfig"
+            "maxOutputTokens": 2048,
+            "temperature": 0.5
+        }
+    }
+
+    print("\nRequesting itinerary from Gemini AI... (This may take a moment)\n")
+    
+    try:
+        response = requests.post(
+            f"{GEMINI_API_URL}?key={api_key}",
+            headers={"Content-Type": "application/json"},
+            json=payload,
+            timeout=30  # Set a timeout for the API call
+        )
+        response.raise_for_status() # Raise an exception for bad status codes (4xx or 5xx)
+        
+        result = response.json()
+        
+        # Parse the generated text
+        candidate = result.get('candidates', [{}])[0]
+        generated_text = candidate.get('content', {}).get('parts', [{}])[0].get('text', 'No itinerary could be generated.')
+        
+        print("\nMy Name is Chris, your AI Itinerary expert:\n")
+        print(generated_text)
+        print("\n")
+        
+    except requests.exceptions.HTTPError as errh:
+        print(f"\nHTTP Error communicating with Gemini API: {errh}")
+        print(f"Response Content: {response.text}")
+    except requests.exceptions.ConnectionError as errc:
+        print(f"\nError Connecting to Gemini API: {errc}")
+    except requests.exceptions.Timeout as errt:
+        print(f"\nTimeout Error reaching Gemini API: {errt}")
+    except requests.exceptions.RequestException as err:
+        print(f"\nAn unexpected Error occurred: {err}")
+    except Exception as e:
+        print(f"\nAn error occurred while processing the response: {e}")
+
+if __name__ == "__main__":
+    instructor_chatbot()
